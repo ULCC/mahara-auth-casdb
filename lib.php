@@ -235,7 +235,7 @@ class AuthCasdb extends Auth {
         global $PHPCAS_CLIENT;
 
         // Debugging - remove when the site is live or else it'll slow things down
-        // phpCAS::setDebug('../../../log/cas_log');
+        phpCAS::setDebug('../../../log/cas_log');
 
         // Say what time we started
         phpCAS::trace(date('r'));
@@ -281,7 +281,7 @@ class AuthCasdb extends Auth {
 
         // phpCAS seems to make the headers get sent somehow, so we want to prevent all output till
         // after it's done
-        ob_start();
+        //ob_start();
 
         // Mahara won't start a session until the user gets logged in. We need
         // the session to deal with persistence across the phpCAS redirects, so we do this.
@@ -386,7 +386,7 @@ class AuthCasdb extends Auth {
             }
         }
         // allow output again now that phpCAS stuff is done
-        ob_end_clean();
+        //ob_end_clean();
     }
 
     /**
