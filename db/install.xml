@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="lib/db" VERSION="20060926" COMMENT="XMLDB file for Mahara media plugin tables"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../lib/xmldb/xmldb.xsd"
+>
+<TABLES>
+    <TABLE NAME="auth_casdb">
+        <FIELDS>
+            <FIELD NAME="id" TYPE="int" LENGTH="10" SEQUENCE="true" NOTNULL="true" />
+            <FIELD NAME="ticket" TYPE="char" NOTNULL="true" LENGTH="255" />
+            <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" />
+        </FIELDS>
+        <KEYS>
+            <KEY NAME="idpk" TYPE="primary" FIELDS="id" />
+            <KEY NAME="useridfk" TYPE="foreign" FIELDS="userid" REFTABLE="usr" REFFIELDS="id" />
+        </KEYS>
+    </TABLE>
+</TABLES>
