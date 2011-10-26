@@ -48,7 +48,7 @@ class AuthCasdb extends Auth {
         // TODO proper config stuff needs to be settable
         // For connecting
         $this->config['casversion'] = '2.0';
-        $this->config['hostname'] = 'CHANGETHIS';
+        $this->config['hostname'] = 'slondonhiec.org.uk';
         $this->config['port'] = 443;
         $this->config['baseuri'] = 'cas_server/';
         $this->config['certificate_check'] = false;
@@ -683,10 +683,14 @@ class PluginAuthCasdb extends PluginAuth {
             $current = array();
         }
 
-        self::$default_config =   array('dbhost' => $values['dbhost'],
-                                        'dbuser' => $values['dbuser'],
-                                        'dbpass' => $values['dbpass'],
-                                        'dbname' => $values['dbname']);
+        foreach (self::$default_config as $name => &$value) {
+            $value = $values[$name];
+        }
+//        self::$default_config =   array('dbhost' => $values['dbhost'],
+//                                        'dbuser' => $values['dbuser'],
+//                                        'dbpass' => $values['dbpass'],
+//                                        'dbname' => $values['dbname'],
+//        );
 
         foreach(self::$default_config as $field => $value) {
             $record = new stdClass();
