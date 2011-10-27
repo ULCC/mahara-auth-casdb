@@ -124,19 +124,33 @@ class AuthCasdb extends Auth {
                 throw new SystemException('Could not switch to external database');
             }
 
+            $useextradata = ( !empty($this->config['dbextra1ext']) &&
+                              !empty($this->config['dbextra1int']) &&
+                              !empty($this->config['dbextra1exttable']) );
+
+
             // Use this code if you are using Drupal DB as the user source
             // Drupal has no fields in the user table for real names.
             if ($this->config['usedrupal']) {
 
-            $query = "SELECT f.{$this->config['dbfirstname']} AS firstname,
-                             l.{$this->config['dblastname']}  AS lastname,
-                             u.{$this->config['dbmail']}      AS email
-                        FROM {$this->config['dbtable']} u
-                   LEFT JOIN  {$this->config['dbdrupalfirstnametable']} f
-                          ON f.entity_id = u.uid
-                   LEFT JOIN {$this->config['dbdrupallastnametable']} l
-                          ON l.entity_id = u.uid
-                       WHERE {$this->config['dbusername']} = '{$username}'";
+                $query = "SELECT f.{$this->config['dbfirstname']} AS firstname,
+                                 l.{$this->config['dblastname']}  AS lastname,
+                                 u.{$this->config['dbmail']}      AS email ";
+                // There will sometime be extra stuff that Mahara needs from Drupal
+                if ($useextradata) {
+                    $query .= " x1.{$this->config['dbextra1ext']} AS {$this->config['dbextra1int']} ";
+                }
+                $query .= " FROM {$this->config['dbtable']} u
+                       LEFT JOIN  {$this->config['dbdrupalfirstnametable']} f
+                              ON f.entity_id = u.uid
+                       LEFT JOIN {$this->config['dbdrupallastnametable']} l
+                              ON l.entity_id = u.uid ";
+                // There will sometime be extra stuff that Mahara needs from Drupal
+                if ($useextradata) {
+                    $query .= " LEFT JOIN {$this->config['dbextra1exttable']} AS x1
+                                       ON x1.entity_id = u.uid  ";
+                }
+                $query .= " WHERE {$this->config['dbusername']} = '{$username}'";
             } else {
                 // Alternatively, use this code if you are using CiviCRM as the source of user data,
                 // with a DB view set up for Moodle and Mahara to read from.
@@ -144,7 +158,12 @@ class AuthCasdb extends Auth {
                 $query = "SELECT {$this->config['dbmail']} AS email ";
                 $query .= !empty($this->config['dbfirstname']) ? ", {$this->config['dbfirstname']} AS firstname " : '';
                 $query .= !empty($this->config['dblastname']) ? ", {$this->config['dblastname']} AS lastname " : '';
-
+                if (!empty($this->config['dbextra1ext'])) {
+                    $query .= ", {$this->config['dbextra1ext']} ";
+                    if (!empty($this->config['dbextra1int'])) {
+                        $query .= " AS {$this->config['dbextra1int']} ";
+                    }
+                }
                 $query .= " FROM {$this->config['dbtable']}
                            WHERE {$this->config['dbusername']} = '{$username}'";
 
@@ -420,7 +439,7 @@ class PluginAuthCasdb extends PluginAuth {
         'dblastname' => '',
         'dbextra1ext' => '',
         'dbextra1int' => '',
-        'dbextra1inttable' => ''
+        'dbextra1exttable' => ''
 
     );
 
@@ -588,6 +607,14 @@ class PluginAuthCasdb extends PluginAuth {
                 ),
                 'defaultvalue' => self::$default_config['dbextra1ext']
             ),
+            'dbextra1exttable' => array(
+                'type'  => 'text',
+                'title' => get_string('dbextra1exttable', 'auth.casdb'),
+                'rules' => array(
+                    'required' => false,
+                ),
+                'defaultvalue' => self::$default_config['dbextra1exttable']
+            ),
             'dbextra1int' => array(
                 'type'  => 'text',
                 'title' => get_string('dbextra1int', 'auth.casdb'),
@@ -595,14 +622,6 @@ class PluginAuthCasdb extends PluginAuth {
                     'required' => false,
                 ),
                 'defaultvalue' => self::$default_config['dbextra1int']
-            ),
-            'dbextra1inttable' => array(
-                'type'  => 'text',
-                'title' => get_string('dbextra1inttable', 'auth.casdb'),
-                'rules' => array(
-                    'required' => false,
-                ),
-                'defaultvalue' => self::$default_config['dbextra1inttable']
             ),
             'usedrupal' => array(
                 'type'  => 'checkbox',

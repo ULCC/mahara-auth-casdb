@@ -41,14 +41,13 @@ $string['baseuri'] = 'Base URI of CAS server (the bit after \'domainname.co.uk/\
 $string['dbusername'] = 'Database username field';
 $string['dbfirstname'] = 'Database firstname field';
 $string['dblastname'] = 'Database lastname field';
-$string['dbextra1inttable'] = 'Internal Mahara database table to put the first bit of extra data into';
+$string['dbextra1exttable'] = 'External database table to get the first bit of extra data from';
 $string['dbextra1int'] = 'Internal Mahara database field to add 1st extra bit of data to';
 $string['dbextra1ext'] = 'External database field to get the first bit of extra data from';
 $string['dbmail'] = 'Database email field';
 $string['dbdrupalfirstnametable'] = 'Table where Drupal keeps firstname';
 $string['dbdrupallastnametable'] = 'Table where Drupal keeps last name';
 $string['usedrupal'] = 'Use separate Drupal table joins to get user first and last names (table names not needed if not)';
-
 
 
 
