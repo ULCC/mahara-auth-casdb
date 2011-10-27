@@ -43,7 +43,7 @@ class AuthCasdb extends Auth {
 
     public function __construct($id = null) {
         $this->type                         = 'casdb';
-        $this->has_instance_config          = false;
+        $this->has_instance_config          = true;
 
         // TODO proper config stuff needs to be settable
         // For connecting
@@ -159,13 +159,12 @@ class AuthCasdb extends Auth {
                 $query .= " FROM {$this->config['dbtable']}
                            WHERE {$this->config['dbusername']} = '{$username}'";
 
-
-
             }
 
-
-
             $result  = mysql_query($query);
+            if (!$result) {
+                throw new SystemException('Invalid query: ' . mysql_error());
+            }
             $numrows = mysql_num_rows($result);
 
             if ($numrows > 1) {
