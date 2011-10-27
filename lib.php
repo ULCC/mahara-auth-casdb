@@ -124,9 +124,9 @@ class AuthCasdb extends Auth {
                 throw new SystemException('Could not switch to external database');
             }
 
-            $useextradata = ( !empty($this->config['dbextra1ext']) &&
-                              !empty($this->config['dbextra1int']) &&
-                              !empty($this->config['dbextra1exttable']) );
+            $useextradata = ( !empty($this->config['dbextraext']) &&
+                              !empty($this->config['dbextraint']) &&
+                              !empty($this->config['dbextraexttable']) );
 
 
             // Use this code if you are using Drupal DB as the user source
@@ -138,7 +138,7 @@ class AuthCasdb extends Auth {
                                  u.{$this->config['dbmail']}      AS email ";
                 // There will sometime be extra stuff that Mahara needs from Drupal
                 if ($useextradata) {
-                    $query .= ", x1.{$this->config['dbextra1ext']} AS {$this->config['dbextra1int']} ";
+                    $query .= ", x.{$this->config['dbextraext']} AS {$this->config['dbextraint']} ";
                 }
                 $query .= " FROM {$this->config['dbtable']} u
                        LEFT JOIN  {$this->config['dbdrupalfirstnametable']} f
@@ -147,8 +147,8 @@ class AuthCasdb extends Auth {
                               ON l.entity_id = u.uid ";
                 // There will sometime be extra stuff that Mahara needs from Drupal
                 if ($useextradata) {
-                    $query .= " LEFT JOIN {$this->config['dbextra1exttable']} AS x1
-                                       ON x1.entity_id = u.uid  ";
+                    $query .= " LEFT JOIN {$this->config['dbextraexttable']} AS x
+                                       ON x.entity_id = u.uid  ";
                 }
                 $query .= " WHERE {$this->config['dbusername']} = '{$username}'";
             } else {
@@ -158,10 +158,10 @@ class AuthCasdb extends Auth {
                 $query = "SELECT {$this->config['dbmail']} AS email ";
                 $query .= !empty($this->config['dbfirstname']) ? ", {$this->config['dbfirstname']} AS firstname " : '';
                 $query .= !empty($this->config['dblastname']) ? ", {$this->config['dblastname']} AS lastname " : '';
-                if (!empty($this->config['dbextra1ext'])) {
-                    $query .= ", {$this->config['dbextra1ext']} ";
-                    if (!empty($this->config['dbextra1int'])) {
-                        $query .= " AS {$this->config['dbextra1int']} ";
+                if (!empty($this->config['dbextraext'])) {
+                    $query .= ", {$this->config['dbextraext']} ";
+                    if (!empty($this->config['dbextraint'])) {
+                        $query .= " AS {$this->config['dbextraint']} ";
                     }
                 }
                 $query .= " FROM {$this->config['dbtable']}
@@ -437,10 +437,9 @@ class PluginAuthCasdb extends PluginAuth {
         'dbfirstname' => '',
         'dbdrupallastnametable' => '',
         'dblastname' => '',
-        'dbextra1ext' => '',
-        'dbextra1int' => '',
-        'dbextra1exttable' => ''
-
+        'dbextraexttable' => '',
+        'dbextraext' => '',
+        'dbextraint' => ''
     );
 
     public static function has_config() {
@@ -599,29 +598,29 @@ class PluginAuthCasdb extends PluginAuth {
                 ),
                 'defaultvalue' => self::$default_config['dblastname']
             ),
-            'dbextra1ext' => array(
+            'dbextraexttable' => array(
                 'type'  => 'text',
-                'title' => get_string('dbextra1ext', 'auth.casdb'),
+                'title' => get_string('dbextraexttable', 'auth.casdb'),
                 'rules' => array(
                     'required' => false,
                 ),
-                'defaultvalue' => self::$default_config['dbextra1ext']
+                'defaultvalue' => self::$default_config['dbextraexttable']
             ),
-            'dbextra1exttable' => array(
+            'dbextraext' => array(
                 'type'  => 'text',
-                'title' => get_string('dbextra1exttable', 'auth.casdb'),
+                'title' => get_string('dbextraext', 'auth.casdb'),
                 'rules' => array(
                     'required' => false,
                 ),
-                'defaultvalue' => self::$default_config['dbextra1exttable']
+                'defaultvalue' => self::$default_config['dbextraext']
             ),
-            'dbextra1int' => array(
+            'dbextraint' => array(
                 'type'  => 'text',
-                'title' => get_string('dbextra1int', 'auth.casdb'),
+                'title' => get_string('dbextraint', 'auth.casdb'),
                 'rules' => array(
                     'required' => false,
                 ),
-                'defaultvalue' => self::$default_config['dbextra1int']
+                'defaultvalue' => self::$default_config['dbextraint']
             ),
             'usedrupal' => array(
                 'type'  => 'checkbox',
