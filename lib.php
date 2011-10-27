@@ -138,7 +138,7 @@ class AuthCasdb extends Auth {
                                  u.{$this->config['dbmail']}      AS email ";
                 // There will sometime be extra stuff that Mahara needs from Drupal
                 if ($useextradata) {
-                    $query .= " x1.{$this->config['dbextra1ext']} AS {$this->config['dbextra1int']} ";
+                    $query .= ", x1.{$this->config['dbextra1ext']} AS {$this->config['dbextra1int']} ";
                 }
                 $query .= " FROM {$this->config['dbtable']} u
                        LEFT JOIN  {$this->config['dbdrupalfirstnametable']} f
