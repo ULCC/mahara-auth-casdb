@@ -153,8 +153,8 @@ class AuthCasdb extends Auth {
                 // with a DB view set up for Moodle and Mahara to read from.
                 // First and last name are optional
                 $query = "SELECT {$this->config['dbmail']} AS email ";
-                $query .= !empty($this->config['dbfirstname']) ? "{$this->config['dbfirstname']} AS firstname, " : '';
-                $query .= !empty($this->config['dblastname']) ? "{$this->config['dblastname']} AS lastname, " : '';
+                $query .= !empty($this->config['dbfirstname']) ? ", {$this->config['dbfirstname']} AS firstname " : '';
+                $query .= !empty($this->config['dblastname']) ? ", {$this->config['dblastname']} AS lastname " : '';
 
                 $query .= " FROM {$this->config['dbtable']}
                            WHERE {$this->config['dbusername']} = '{$username}'";
