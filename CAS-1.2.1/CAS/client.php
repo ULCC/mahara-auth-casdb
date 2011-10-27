@@ -2834,7 +2834,7 @@ class CASClient
 			$final_uri .= '://';
 
 			// $final_uri .= $this->getServerUrl();
-			$final_uri .= 'slondonhiec.org.uk'; // ULCC hack
+			$final_uri      .= 'slondonhiec.org.uk'; // ULCC hack
 			$request_uri	= explode('?', $_SERVER['REQUEST_URI'], 2);
 			$final_uri		.= $request_uri[0];
 
