@@ -689,29 +689,23 @@ class PluginAuthCasdb extends PluginAuth {
             $current = array();
         }
 
-        foreach (self::$default_config as $name => &$value) {
-            $value = $values[$name];
-        }
-//        self::$default_config =   array('dbhost' => $values['dbhost'],
-//                                        'dbuser' => $values['dbuser'],
-//                                        'dbpass' => $values['dbpass'],
-//                                        'dbname' => $values['dbname'],
-//        );
+        foreach (self::$default_config as $name => $defaultvalue) {
 
-        foreach(self::$default_config as $field => $value) {
             $record = new stdClass();
             $record->instance = $values['instance'];
-            $record->field    = $field;
-            $record->value    = $value;
+            $record->field    = $name;
+            $record->value    = empty($values[$name]) ? $defaultvalue : $values[$name];
 
-            if ($values['create'] || !array_key_exists($field, $current)) {
+            if ($values['create'] || !array_key_exists($name, $current)) {
                 insert_record('auth_instance_config', $record);
             } else {
-                update_record('auth_instance_config', $record, array('instance' => $values['instance'], 'field' => $field));
+                update_record('auth_instance_config', $record, array('instance' => $values['instance'],
+                                                                     'field' => $name));
             }
         }
 
         return $values;
+
     }
 
 
