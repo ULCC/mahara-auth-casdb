@@ -136,7 +136,7 @@ class AuthCasdb extends Auth {
                 $query = "SELECT f.{$this->config['dbfirstname']} AS firstname,
                                  l.{$this->config['dblastname']}  AS lastname,
                                  u.{$this->config['dbmail']}      AS email ";
-                // There will sometime be extra stuff that Mahara needs from Drupal
+                // There will sometimes be extra stuff that Mahara needs from Drupal
                 if ($useextradata) {
                     $query .= ", x.{$this->config['dbextraext']} AS {$this->config['dbextraint']} ";
                 }
@@ -365,6 +365,13 @@ class AuthCasdb extends Auth {
                     }
                     if (isset($userdata['lastname'])) {
                         $USER->lastname = $userdata['lastname'];
+                    }
+                    // In case there is anything dynamic
+                    if (isset($this->config['dbextraint']) && !empty($this->config['dbextraint'])) {
+                        $attribute = $this->config['dbextraint'];
+                        if (isset($userdata[$attribute])) {
+                            $USER->$attribute = $userdata[$attribute];
+                        }
                     }
                     if (isset($userdata['email'])) {
                         $USER->email = $userdata['email'];
