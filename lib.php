@@ -187,7 +187,7 @@ class AuthCasdb extends Auth {
                 throw new SystemException('User not found in external DB. Could also be an SQL error');
             }
 
-            $user = mysql_fetch_array($result);
+            $user = mysql_fetch_array($result, MYSQL_ASSOC);
 
             mysql_close($connection);
 
@@ -324,6 +324,12 @@ class AuthCasdb extends Auth {
                             $USER->$attribute = $value;
                         }
                         $USER->commit();
+                        if (isset($userdata['studentid'])) { // bit of a hack :(
+                            // Needs storing as an artefact, but only after we have a userid.
+                            $profile = new ArtefactTypeStudentid(0, array('owner' => $USER->get('id')));
+                            $profile->set('title', $userdata['studentid']);
+                            $profile->commit();
+                        }
 
                         return;
                         //error_log("user account {$username} was found"); // ULCC debug
