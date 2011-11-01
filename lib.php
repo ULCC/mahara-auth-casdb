@@ -378,7 +378,10 @@ class AuthCasdb extends Auth {
                                 $USER->$attribute = $userdata[$attribute];
 
                                 if ($attribute == 'studentid') {
-                                    $institution->addUserAsMember($USER);
+                                    // Needs storing as an artefact
+                                    $profile = new ArtefactTypeStudentid(0, array('owner' => $USER->get('id')));
+                                    $profile->set('title', $userdata[$attribute]);
+                                    $profile->commit();
                                 }
                             }
                         }
@@ -397,6 +400,7 @@ class AuthCasdb extends Auth {
                         try {
                             create_user($USER, array(), $this->institution, null);
                             $USER->reanimate($USER->id, $this->instanceid);
+                            $institution->addUserAsMember($USER);
                         }
                         catch (Exception $e) {
                             db_rollback();
