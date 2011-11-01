@@ -33,6 +33,7 @@ $docroot = get_config('docroot');
 require_once($docroot . 'auth/lib.php');
 require_once($docroot . 'lib/institution.php'); // Fails without this. Normally included further down init.php
 require_once($docroot . 'auth/casdb/CAS-1.2.1/CAS.php');
+require_once($docroot . 'artefact/internal/lib.php');
 
 /**
  * This will work with the Drupal CAS server module (or hopefully any other CAS server) to authenticate users
