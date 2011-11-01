@@ -375,16 +375,10 @@ class AuthCasdb extends Auth {
                         // In case there is anything dynamic
                         if (isset($this->config['dbextraint']) && !empty($this->config['dbextraint'])) {
                             $attribute = $this->config['dbextraint'];
-                            if (isset($userdata[$attribute])) {
-
+                            if (isset($userdata[$attribute]) && $attribute !== 'studentid') {
+                                // For some reason, adding studentid leads to an artefact with owner
+                                // of 0, so we do it later.
                                 $USER->$attribute = $userdata[$attribute];
-
-                                if ($attribute == 'studentid') {
-                                    // Needs storing as an artefact
-                                    $profile = new ArtefactTypeStudentid(0, array('owner' => $USER->get('id')));
-                                    $profile->set('title', $userdata[$attribute]);
-                                    $profile->commit();
-                                }
                             }
                         }
                         if (isset($userdata['email'])) {
@@ -403,10 +397,10 @@ class AuthCasdb extends Auth {
                             create_user($USER, array(), $this->institution, null);
                             $USER->reanimate($USER->id, $this->instanceid);
                             $institution->addUserAsMember($USER);
-                            if (isset($USER->studentid)) {
-                                // Needs storing as an artefact, but only after we have a userid
+                            if (isset($userdata['studentid'])) { // bit of a hack :(
+                                // Needs storing as an artefact, but only after we have a userid.
                                 $profile = new ArtefactTypeStudentid(0, array('owner' => $USER->get('id')));
-                                $profile->set('title', $userdata[$attribute]);
+                                $profile->set('title', $userdata['studentid']);
                                 $profile->commit();
                             }
                         }
