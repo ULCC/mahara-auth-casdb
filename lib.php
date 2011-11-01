@@ -434,7 +434,7 @@ class AuthCasdb extends Auth {
         // a public page. Not, however, if this was a direct request for the login page, otherwise
         // admins will be locked out
         $requesturl = $_SERVER['REQUEST_URI'];
-        $isloginpage = preg_match($requesturl, '/\/?login$/');
+        $isloginpage = preg_match('#/?login$#', $requesturl);
         if (defined('PUBLIC') && !$isloginpage) {
             phpCAS::forceAuthentication();
         }
