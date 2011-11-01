@@ -304,104 +304,119 @@ class AuthCasdb extends Auth {
 
             $username = phpCAS::getUser();
 
-            // does user exist already?
-
-            try {
-                // this will find the user with that username and try to use each auth instance
-                // to authenticate. We need to get the authenticate_user_account($user, $password)
-                // to check PHP Cas again and say OK whilst ignoring the password.
-                $authenticated = $USER->login($username, 'dummypassword');
-                if ($authenticated) {
-                    error_log("user account {$username} was found"); // ULCC debug
-                } else {
-                    error_log("user account {$username} was not found"); // ULCC debug
-                }
-            }
-            catch (AuthUnknownUserException $e) {
-
-                // If the user doesn't exist, check for institutions that
-                // want to create users automatically.
-
+            if (!empty($username)) {
+                // does user exist already?
                 try {
-
-                    // Reset the LiveUser object, since we are attempting to create a
-                    // new user
-                    $SESSION->destroy_session();
-                    $USER = new LiveUser();
-                    $USER->username = strtolower($username);
-                    $USER->password = substr(md5('dummy'.time()), 0, 10);
-
-
-                    // The normal way this works is that Mahara will cycle through all authentication mechanisms
-                    // until it finds one that approves this user. This isn't possible here, as we only have a username
-                    // so we either need to assume there is only one institution that can use CAS, or
-                    // find a way to get the name of the institution via the cas server. This could
-                    // become complex if there is more than one institution on a single CAS server,
-                    // or if there are multiple CAS servers to try. Hard coded to one institution for now.
-
-                    $USER->authinstance = $this->instanceid;
-
-                    $institution = new Institution($this->institution);
-
-                    if ($institution->isFull()) {
-                        throw new AuthUnknownUserException('Institution has too many users');
+                    // this will find the user with that username and try to use each auth instance
+                    // to authenticate. We need to get the authenticate_user_account($user, $password)
+                    // to check PHP Cas again and say OK whilst ignoring the password.
+                    $authenticated = $USER->login($username, 'dummypassword');
+                    if ($authenticated) {
+                        return;
+                        //error_log("user account {$username} was found"); // ULCC debug
+                    } else {
+                        //error_log("user account {$username} was not found"); // ULCC debug
                     }
+                }
+                catch (AuthUnknownUserException $e) {
 
-                    try {
-                        $userdata = $this->get_user_info($username);
-                    } catch (SystemException $e) {
-                        $SESSION->add_error_msg('Could not retrieve remote user data for '.$username.': '.$e->getMessage());
-                    }
+                    // If the user doesn't exist, check for institutions that
+                    // want to create users automatically.
 
-                    if (empty($userdata)) {
-                        throw new AuthUnknownUserException("\"$username\" is not known");
-                    }
+                    try { // See if we can make a user
 
-                    // We have the data - create the user
-                    $USER->lastlogin = db_format_timestamp(time());
+                        // Reset the LiveUser object, since we are attempting to create a
+                        // new user
+                        $SESSION->destroy_session();
+                        $USER = new LiveUser();
+                        $USER->username = strtolower($username);
+                        $USER->password = substr(md5('dummy'.time()), 0, 10);
 
-                    if (isset($userdata['firstname'])) {
-                        $USER->firstname = $userdata['firstname'];
-                    }
-                    if (isset($userdata['lastname'])) {
-                        $USER->lastname = $userdata['lastname'];
-                    }
-                    // In case there is anything dynamic
-                    if (isset($this->config['dbextraint']) && !empty($this->config['dbextraint'])) {
-                        $attribute = $this->config['dbextraint'];
-                        if (isset($userdata[$attribute])) {
-                            $USER->$attribute = $userdata[$attribute];
+
+                        // The normal way this works is that Mahara will cycle through all authentication mechanisms
+                        // until it finds one that approves this user. This isn't possible here, as we only have a username
+                        // so we either need to assume there is only one institution that can use CAS, or
+                        // find a way to get the name of the institution via the cas server. This could
+                        // become complex if there is more than one institution on a single CAS server,
+                        // or if there are multiple CAS servers to try. Hard coded to one institution for now.
+
+                        $USER->authinstance = $this->instanceid;
+
+                        $institution = new Institution($this->institution);
+
+                        if ($institution->isFull()) {
+                            throw new AuthUnknownUserException('Institution has too many users');
                         }
-                    }
-                    if (isset($userdata['email'])) {
-                        $USER->email = $userdata['email'];
-                    }
-                    else {
-                        // The user will be asked to populate this when they log in.
-                        $USER->email = null;
-                    }
 
-                    // This normally comes as a default from the file artifact, but this seems to
-                    // be missing from my dev intall
-                    $USER->quota = 52428800;
+                        try {
+                            $userdata = $this->get_user_info($username);
+                        } catch (SystemException $e) {
+                            $SESSION->add_error_msg('Could not retrieve remote user data for '.$username.': '.$e->getMessage());
+                        }
 
-                    try {
-                        create_user($USER, array(), $this->institution, null);
-                        $USER->reanimate($USER->id, $this->instanceid);
-                    }
-                    catch (Exception $e) {
-                        db_rollback();
-                        throw $e;
-                    }
+                        if (empty($userdata)) {
+                            throw new AuthUnknownUserException("\"$username\" is not known");
+                        }
 
-                 } catch (AuthUnknownUserException $e) {
-                     // No action as probably an anonymous user
-                     error_log("user account {$username} was not not created"); // ULCC debug
-                 }
+                        // We have the data - create the user
+                        $USER->lastlogin = db_format_timestamp(time());
+
+                        if (isset($userdata['firstname'])) {
+                            $USER->firstname = $userdata['firstname'];
+                        }
+                        if (isset($userdata['lastname'])) {
+                            $USER->lastname = $userdata['lastname'];
+                        }
+                        // In case there is anything dynamic
+                        if (isset($this->config['dbextraint']) && !empty($this->config['dbextraint'])) {
+                            $attribute = $this->config['dbextraint'];
+                            if (isset($userdata[$attribute])) {
+                                $USER->$attribute = $userdata[$attribute];
+                            }
+                        }
+                        if (isset($userdata['email'])) {
+                            $USER->email = $userdata['email'];
+                        }
+                        else {
+                            // The user will be asked to populate this when they log in.
+                            $USER->email = null;
+                        }
+
+                        // This normally comes as a default from the file artifact, but this seems to
+                        // be missing from my dev intall
+                        $USER->quota = 52428800;
+
+                        try {
+                            create_user($USER, array(), $this->institution, null);
+                            $USER->reanimate($USER->id, $this->instanceid);
+                        }
+                        catch (Exception $e) {
+                            db_rollback();
+                            throw $e;
+                        }
+
+                        return; // No exception, so all OK with user creation
+
+                     } catch (AuthUnknownUserException $e) {
+                         // No action as probably an anonymous user
+                         throw $e;
+                         //error_log("user account {$username} was not not created"); // ULCC debug
+                     }
+                }
             }
         }
         // allow output again now that phpCAS stuff is done
         ob_end_clean();
+
+        // If no authentication happened, we need to redirect to external login if we are not on
+        // a public page. Not, however, if this was a direct request for the login page, otherwise
+        // admins will be locked out
+        $requesturl = $_SERVER['REQUEST_URI'];
+        $isloginpage = preg_match($requesturl, '/\/?login$/');
+        if (!defined('PUBLIC') && !$isloginpage) {
+            phpCAS::forceAuthentication();
+        }
+
     }
 
     /**
