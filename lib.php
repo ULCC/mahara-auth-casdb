@@ -317,6 +317,14 @@ class AuthCasdb extends Auth {
                     // to check PHP Cas again and say OK whilst ignoring the password.
                     $authenticated = $USER->login($username, 'dummypassword');
                     if ($authenticated) {
+                        // Treat the external system as authoritative and overwrite everything
+                        // on each login.
+                        $userdata = $this->get_user_info($username);
+                        foreach ($userdata as $attribute => $value) {
+                            $USER->set($attribute, $value);
+                        }
+                        $USER->commit();
+
                         return;
                         //error_log("user account {$username} was found"); // ULCC debug
                     } else {
