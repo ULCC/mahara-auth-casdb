@@ -403,6 +403,12 @@ class AuthCasdb extends Auth {
                             create_user($USER, array(), $this->institution, null);
                             $USER->reanimate($USER->id, $this->instanceid);
                             $institution->addUserAsMember($USER);
+                            if (isset($USER->studentid)) {
+                                // Needs storing as an artefact, but only after we have a userid
+                                $profile = new ArtefactTypeStudentid(0, array('owner' => $USER->get('id')));
+                                $profile->set('title', $userdata[$attribute]);
+                                $profile->commit();
+                            }
                         }
                         catch (Exception $e) {
                             db_rollback();
