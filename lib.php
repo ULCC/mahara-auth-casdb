@@ -240,6 +240,9 @@ class AuthCasdb extends Auth {
      *
      */
     function connectCAS() {
+        /**
+         * @var CASClient
+         */
         global $PHPCAS_CLIENT;
 
         // Debugging - remove when the site is live or else it'll slow things down
@@ -413,7 +416,7 @@ class AuthCasdb extends Auth {
         // admins will be locked out
         $requesturl = $_SERVER['REQUEST_URI'];
         $isloginpage = preg_match($requesturl, '/\/?login$/');
-        if (!defined('PUBLIC') && !$isloginpage) {
+        if (defined('PUBLIC') && !$isloginpage) {
             phpCAS::forceAuthentication();
         }
 
