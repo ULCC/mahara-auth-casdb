@@ -374,7 +374,12 @@ class AuthCasdb extends Auth {
                         if (isset($this->config['dbextraint']) && !empty($this->config['dbextraint'])) {
                             $attribute = $this->config['dbextraint'];
                             if (isset($userdata[$attribute])) {
+
                                 $USER->$attribute = $userdata[$attribute];
+
+                                if ($attribute == 'studentid') {
+                                    $institution->addUserAsMember($USER);
+                                }
                             }
                         }
                         if (isset($userdata['email'])) {
