@@ -321,7 +321,7 @@ class AuthCasdb extends Auth {
                         // on each login.
                         $userdata = $this->get_user_info($username);
                         foreach ($userdata as $attribute => $value) {
-                            $USER->set($attribute, $value);
+                            $USER->$attribute = $value;
                         }
                         $USER->commit();
 
