@@ -48,21 +48,21 @@ class AuthCasdb extends Auth {
         // TODO proper config stuff needs to be settable
         // For connecting
         $this->config['casversion'] = '2.0';
-        $this->config['hostname'] = 'slondonhiec.org.uk';
+    //    $this->config['hostname'] = 'slondonhiec.org.uk';
         $this->config['port'] = 443;
-        $this->config['baseuri'] = 'cas_server/';
+   //     $this->config['baseuri'] = 'cas_server/';
         $this->config['certificate_check'] = false;
         $this->config['proxycas'] = false;
 
         // For getting user data from the DB if needed for account creation
-        $this->config['dbhost'] = 'CHANGETHIS';
+ //       $this->config['dbhost'] = 'CHANGETHIS';
         $this->config['dbtype'] = 'mysql5';
-        $this->config['dbuser'] = 'CHANGETHIS';
-        $this->config['dbpass'] = 'CHANGETHIS';
-        $this->config['dbname'] = 'CHANGETHIS';
-        $this->config['dbtable'] = 'users';
-        $this->config['username_field'] = 'name';
-        $this->config['email_field']     = 'mail';
+ //       $this->config['dbuser'] = 'CHANGETHIS';
+ //       $this->config['dbpass'] = 'CHANGETHIS';
+ //       $this->config['dbname'] = 'CHANGETHIS';
+ //       $this->config['dbtable'] = 'users';
+ //       $this->config['username_field'] = 'name';
+//        $this->config['email_field']     = 'mail';
 
         if (!empty($id)) {
             return $this->init($id);

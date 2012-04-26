@@ -1106,6 +1106,11 @@ class CASClient
 				$logoutTicket = $this->getSA();
 			}
 			else {
+
+//diverting authentication to CAS/Droupal login - by gregp
+
+				 $this->redirectToCas(FALSE,FALSE);
+
 				// no ticket given, not authenticated
 				phpCAS::trace('no ticket found');
 			}
