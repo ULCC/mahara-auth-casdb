@@ -1110,7 +1110,7 @@ class CASClient
 //diverting authentication to CAS/Droupal login - by gregp
 
 				 $this->redirectToCas(FALSE,FALSE);
-
+error_log('redirecting to Drupal');
 				// no ticket given, not authenticated
 				phpCAS::trace('no ticket found');
 			}

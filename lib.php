@@ -97,14 +97,17 @@ class AuthCasdb extends Auth {
      * @throws AuthUnknownUserException If the user does not exist
      */
     public function authenticate_user_account($user, $password) {
-
+        error_log('begin authenticate_user_account'); // ULCC debug
         $this->must_be_ready();
-
+        error_log('past must_be_ready()'); // ULCC debug
         $this->connectCAS();
         $authenticated = phpCAS::isAuthenticated();
         $casuser = trim(strtolower(phpCAS::getUser()));
         $correctuser = ($casuser == $user->username);
-        return ($authenticated && $correctuser);
+        error_log('cas user is "'.$casuser.'", incoming user is "'.$user->username.'"'); // ULCC debug
+        $result = ($authenticated && $correctuser); 
+        error_log($result);
+        return $result;
 
     }
 
@@ -235,7 +238,7 @@ class AuthCasdb extends Auth {
         global $PHPCAS_CLIENT;
 
         // Debugging - remove when the site is live or else it'll slow things down
-        // phpCAS::setDebug('../../../log/cas_log');
+        phpCAS::setDebug(dirname(__FILE__).'/../../../log/cas_log');
 
         // Say what time we started
         phpCAS::trace(date('r'));
