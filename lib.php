@@ -305,14 +305,14 @@ class AuthCasdb extends Auth {
                 // this will find the user with that username and try to use each auth instance
                 // to authenticate. We need to get the authenticate_user_account($user, $password)
                 // to check PHP Cas again and say OK whilst ignoring the password.
-                $authenticated = $USER->login($username, 'dummypassword');
-                if ($authenticated) {
-                    error_log("user account {$username} was found"); // ULCC debug
-                } else {
-                    error_log("user account {$username} was not found"); // ULCC debug
-                }
+                $USER->login($username, 'dummypassword');
+                // Will throw exception if not found
+                error_log("User account '{$username}' was found"); // ULCC debug
+
             }
             catch (AuthUnknownUserException $e) {
+
+                error_log("User account '{$username}' was not found. Trying to create it..."); // ULCC debug
 
                 // If the user doesn't exist, check for institutions that
                 // want to create users automatically.
@@ -346,6 +346,7 @@ class AuthCasdb extends Auth {
                         $userdata = $this->get_user_info($username);
                     } catch (SystemException $e) {
                         $SESSION->add_error_msg('Could not retrieve remote user data for '.$username.': '.$e->getMessage());
+                        throw $e;
                     }
 
                     if (empty($userdata)) {
@@ -353,6 +354,7 @@ class AuthCasdb extends Auth {
                     }
 
                     // We have the data - create the user
+                    error_log('Got external data, creating user...'); // ULCC debug
                     $USER->lastlogin = db_format_timestamp(time());
 
                     if (isset($userdata['firstname'])) {
