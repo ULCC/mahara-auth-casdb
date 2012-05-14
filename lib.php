@@ -106,7 +106,7 @@ class AuthCasdb extends Auth {
         $correctuser = ($casuser == $user->username);
         error_log('cas user is "'.$casuser.'", incoming user is "'.$user->username.'"'); // ULCC debug
         $result = ($authenticated && $correctuser);
-        error_log($result);
+        error_log('authenticate_user_account() says: '.$result);
         return $result;
 
     }
