@@ -105,7 +105,7 @@ class AuthCasdb extends Auth {
         $casuser = trim(strtolower(phpCAS::getUser()));
         $correctuser = ($casuser == $user->username);
         error_log('cas user is "'.$casuser.'", incoming user is "'.$user->username.'"'); // ULCC debug
-        $result = ($authenticated && $correctuser); 
+        $result = ($authenticated && $correctuser);
         error_log($result);
         return $result;
 
@@ -308,6 +308,9 @@ class AuthCasdb extends Auth {
                 $USER->login($username, 'dummypassword');
                 // Will throw exception if not found
                 error_log("User account '{$username}' was found"); // ULCC debug
+                if (!$USER->is_logged_in()) {
+                    error_log('User is still not loggeed in :-/');
+                }
 
             }
             catch (AuthUnknownUserException $e) {
@@ -391,6 +394,7 @@ class AuthCasdb extends Auth {
             }
         }
         // allow output again now that phpCAS stuff is done
+
         ob_end_clean();
     }
 
